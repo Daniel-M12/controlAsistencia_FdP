@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class TrabajoFinal_G3 {
     //Constantes públicas
-    public static final int X = 4;
+    public static final int N = 4;
     public static final String HORAINGRESO = "08:00";
     public static final String HORASALIDA = "16:00";
     //Arreglos públicos
@@ -17,7 +17,7 @@ public class TrabajoFinal_G3 {
 
     public static void main(String[] args) {
         Scanner lector = new Scanner(System.in);
-        String seleccion = "";
+        String seleccion;
 
         construirInterface();   //Construyendo interfase de usuario
 
@@ -50,6 +50,24 @@ public class TrabajoFinal_G3 {
 
     private static void registrarEntrada() {
         System.out.println("Registrar Entrada");
+        Scanner lector = new Scanner(System.in);
+
+        System.out.println("Ingrese el nombre del trabajador para generar su asistencia");
+        String nombre = lector.next();
+
+        int indice = existeTrabajador(nombre);
+        System.out.println(indice);
+
+    }
+
+    private static int existeTrabajador(String nombre) {
+        int indice = 0;
+
+        for (indice = N-1; indice >= 0; indice--) {
+            if (trabajadores[indice].equals(nombre)) return indice; //Si el nombre del trabajador está en el arreglo devuelve el índice del arreglo
+        }
+
+        return indice;  //Si el nombre del trabajador no está en el arreglo devuelve -1
     }
 
     private static void construirInterface() {
