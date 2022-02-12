@@ -1,19 +1,20 @@
 package Trabajo_Final_FdP;
 
+import java.time.LocalTime;
 import java.util.Scanner;
 
 public class TrabajoFinal_G3 {
     //Constantes públicas
     public static final int N = 4;
-    public static final String HORAINGRESO = "08:00";
-    public static final String HORASALIDA = "16:00";
+    public static final LocalTime HORAINGRESO = LocalTime.parse("08:00");
+    public static final LocalTime HORASALIDA = LocalTime.parse("16:00");
     //Arreglos públicos
-    public static String [] trabajadores = {"Nombre1", "Nombre2", "Nombre3", "Nombre4"};
+    public static String [] trabajadores = {"Nombre 1", "Nombre 2", "Nombre 3", "Nombre 4"};
     public static int[] asistencia = {0,0,0,0};
     public static int[] tardanzas = {0,0,0,0};
     public static int[] minutosTotales = {0,0,0,0};
-    public static String[] horaEntrada = {"","","",""};
-    public static String[] horaSalida = {"","","",""};
+    public static LocalTime[] horaEntrada = new LocalTime[N];
+    public static LocalTime[] horaSalida = new LocalTime[N];
 
     public static void main(String[] args) {
         Scanner lector = new Scanner(System.in);
@@ -49,15 +50,40 @@ public class TrabajoFinal_G3 {
     }
 
     private static void registrarEntrada() {
-        System.out.println("Registrar Entrada");
         Scanner lector = new Scanner(System.in);
+        String respuesta = "S";
+        int indice = 0;
 
-        System.out.println("Ingrese el nombre del trabajador para generar su asistencia");
-        String nombre = lector.next();
+        do {
+            do {
+                System.out.println("Ingrese el nombre del trabajador para generar su asistencia (caso contrario escriba SALIR): ");
+                String nombre = lector.nextLine();
 
-        int indice = existeTrabajador(nombre);
-        System.out.println(indice);
+                if (nombre.equals("SALIR")) return; //Si el usuario escribe salir acaba el método
 
+                indice = existeTrabajador(nombre);
+            } while (indice < 0);    //Este bucle valida que el trabajador exista, si no existe vuelve a preguntar
+
+            asistencia[indice]++;
+
+            registrarTardanza(indice);
+            System.out.println(trabajadores[indice] + ": Asistencias: " + asistencia[indice] + ". Tardanzas: " + tardanzas[indice] + ".");
+
+            System.out.println("");
+            System.out.print("¿Desea registrar la asistencia de otro trabajador? (S/N): ");
+            respuesta = lector.nextLine().toUpperCase();
+        }while (respuesta.equals("S"));
+    }
+
+    private static void registrarTardanza(int indice) {
+        horaEntrada[indice] = capturarHora();
+        if (horaEntrada[indice].isAfter(HORAINGRESO)) {
+            tardanzas[indice]++;
+        }
+    }
+
+    private static LocalTime capturarHora() {
+        return LocalTime.parse("08:15");
     }
 
     private static int existeTrabajador(String nombre) {
