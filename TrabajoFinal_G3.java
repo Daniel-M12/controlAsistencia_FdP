@@ -1,6 +1,9 @@
 package Trabajo_Final_FdP;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 public class TrabajoFinal_G3 {
@@ -42,11 +45,66 @@ public class TrabajoFinal_G3 {
     }
 
     private static void resumenTrabajador() {
-        System.out.println("Resumen Trabajador");
+        Scanner lector = new Scanner(System.in);
+        String respuesta = "S";
+        int indice = 0;
+
+        do {
+            do {
+                System.out.println("Ingrese el nombre del trabajador del que desea obtener el resumen (caso contrario escriba SALIR): ");
+                String nombre = lector.nextLine();
+
+                if (nombre.equals("SALIR")) return; //Si el usuario escribe salir acaba el método
+
+                indice = existeTrabajador(nombre);
+            } while (indice < 0);    //Este bucle valida que el trabajador exista, si no existe vuelve a preguntar
+
+            int horas = minutosTotales[indice]/60;
+            int minutos = minutosTotales[indice]%60;
+            String tiempoTrabajado = "";
+
+            if (minutos<10 && horas<10) tiempoTrabajado = "0" +horas + ":0" + minutos;
+            else if (minutos<10 && horas>=10)tiempoTrabajado = horas + ":0" + minutos;
+            else if (minutos>=10 && horas<10) tiempoTrabajado = "0" + horas + ":" + minutos;
+            else if (minutos>=10 && horas>=10) tiempoTrabajado = horas + ":" + minutos;
+
+
+            System.out.println("El trabajador " + trabajadores[indice] + ":");
+            System.out.println("Tiene " + tiempoTrabajado + " horas de trabajo realizadas hasta la fecha.");
+            System.out.println("Ha asistido " + asistencia[indice] + " días hasta la fecha.");
+            System.out.println("Presenta " + tardanzas[indice] + "tardanzas.");
+
+            System.out.println("");
+            System.out.print("¿Desea ver el resumen de asistencia de otro trabajador? (S/N): ");
+            respuesta = lector.nextLine().toUpperCase();
+        }while (respuesta.equals("S"));
     }
 
     private static void registrarSalida() {
-        System.out.println("Registrar Salida");
+        Scanner lector = new Scanner(System.in);
+        String respuesta = "S";
+        int indice = 0;
+
+        do {
+            do {
+                System.out.println("Ingrese el nombre del trabajador para generar su salida (caso contrario escriba SALIR): ");
+                String nombre = lector.nextLine();
+
+                if (nombre.equals("SALIR")) return; //Si el usuario escribe salir acaba el método
+
+                indice = existeTrabajador(nombre);
+            } while (indice < 0);    //Este bucle valida que el trabajador exista, si no existe vuelve a preguntar
+
+            horaSalida[indice] = capturarHora();    //Registra la hora de salida
+
+            minutosTotales[indice] += ChronoUnit.MINUTES.between(horaEntrada[indice], horaSalida[indice]); //Contabiliza los minutos totales trabajados
+
+            System.out.println(minutosTotales[indice]);
+
+            System.out.println("");
+            System.out.print("¿Desea registrar la salida de otro trabajador? (S/N): ");
+            respuesta = lector.nextLine().toUpperCase();
+        }while (respuesta.equals("S"));
     }
 
     private static void registrarEntrada() {
@@ -77,13 +135,21 @@ public class TrabajoFinal_G3 {
 
     private static void registrarTardanza(int indice) {
         horaEntrada[indice] = capturarHora();
+        System.out.println("Hora: " + horaEntrada[indice]);
         if (horaEntrada[indice].isAfter(HORAINGRESO)) {
             tardanzas[indice]++;
         }
     }
 
     private static LocalTime capturarHora() {
-        return LocalTime.parse("08:15");
+        int hora, minuto;
+        Calendar calendario = new GregorianCalendar();
+
+        hora = calendario.get(Calendar.HOUR_OF_DAY);
+        minuto = calendario.get(Calendar.MINUTE);
+
+        String horaIngreso = hora + ":" + minuto;
+        return LocalTime.parse(horaIngreso);
     }
 
     private static int existeTrabajador(String nombre) {
