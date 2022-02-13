@@ -11,13 +11,15 @@ public class TrabajoFinal_G3 {
     public static final int N = 4;
     public static final LocalTime HORAINGRESO = LocalTime.parse("08:00");
     public static final LocalTime HORASALIDA = LocalTime.parse("16:00");
+    public static final int TIEMPOTRABAJO = 9;   //Tiempo de trabajo en minutos
     //Arreglos públicos
-    public static String [] trabajadores = {"Nombre 1", "Nombre 2", "Nombre 3", "Nombre 4"};
-    public static int[] asistencia = {0,0,0,0};
-    public static int[] tardanzas = {0,0,0,0};
-    public static int[] minutosTotales = {0,0,0,0};
-    public static LocalTime[] horaEntrada = new LocalTime[N];
-    public static LocalTime[] horaSalida = new LocalTime[N];
+    public static String [] trabajadores = {"Nombre 1", "Nombre 2", "Nombre 3", "Nombre 4"}; //Nombre de los trabajadores
+    public static int[] asistencia = {0,0,0,0}; //Días asistidos
+    public static int[] tardanzas = {0,0,0,0};  //Tardanzas
+    public static int[] minutosTotales = {0,0,0,0}; //Minutos totales laborados
+    public static int[] horasExtras = {0,0,0,0};    //Horas Extra acumuladas
+    public static LocalTime[] horaEntrada = new LocalTime[N];   //Hora de entrada del día
+    public static LocalTime[] horaSalida = new LocalTime[N];    //Hora de salida del día
 
     public static void main(String[] args) {
         Scanner lector = new Scanner(System.in);
@@ -42,6 +44,17 @@ public class TrabajoFinal_G3 {
 
     private static void resumenGeneral() {
         System.out.println("Resumen General");
+        for (int i = 0; i < N; i++) {
+            String tiempoTrabajado = obtenerTiempoTrabajado(i);
+            String horasExtraTotal = obtenerHorasExtraTotal(i);
+
+            System.out.println("El trabajador " + trabajadores[i] + ":");
+            System.out.println("- Tiene " + tiempoTrabajado + " horas de trabajo realizadas hasta la fecha.");
+            System.out.println("- Ha asistido " + asistencia[i] + " días hasta ahora.");
+            System.out.println("- Presenta " + tardanzas[i] + " tardanzas.");
+            System.out.println("- Tiene acumuladas " + horasExtraTotal + " horas extra.");
+            System.out.println("");
+        }
     }
 
     private static void resumenTrabajador() {
@@ -59,25 +72,50 @@ public class TrabajoFinal_G3 {
                 indice = existeTrabajador(nombre);
             } while (indice < 0);    //Este bucle valida que el trabajador exista, si no existe vuelve a preguntar
 
-            int horas = minutosTotales[indice]/60;
-            int minutos = minutosTotales[indice]%60;
-            String tiempoTrabajado = "";
-
-            if (minutos<10 && horas<10) tiempoTrabajado = "0" +horas + ":0" + minutos;
-            else if (minutos<10 && horas>=10)tiempoTrabajado = horas + ":0" + minutos;
-            else if (minutos>=10 && horas<10) tiempoTrabajado = "0" + horas + ":" + minutos;
-            else if (minutos>=10 && horas>=10) tiempoTrabajado = horas + ":" + minutos;
-
+            String tiempoTrabajado = obtenerTiempoTrabajado(indice);
+            String horasExtraTotal = obtenerHorasExtraTotal(indice);
 
             System.out.println("El trabajador " + trabajadores[indice] + ":");
-            System.out.println("Tiene " + tiempoTrabajado + " horas de trabajo realizadas hasta la fecha.");
-            System.out.println("Ha asistido " + asistencia[indice] + " días hasta la fecha.");
-            System.out.println("Presenta " + tardanzas[indice] + "tardanzas.");
+            System.out.println("- Tiene " + tiempoTrabajado + " horas de trabajo realizadas hasta la fecha.");
+            System.out.println("- Ha asistido " + asistencia[indice] + " días hasta ahora.");
+            System.out.println("- Presenta " + tardanzas[indice] + " tardanzas.");
+            System.out.println("- Tiene acumuladas " + horasExtraTotal + " horas extra.");
+            System.out.println("");
 
             System.out.println("");
             System.out.print("¿Desea ver el resumen de asistencia de otro trabajador? (S/N): ");
             respuesta = lector.nextLine().toUpperCase();
         }while (respuesta.equals("S"));
+    }
+
+    private static String obtenerHorasExtraTotal(int indice) {
+        String horaExtraTotal = "00:00";
+        if (horasExtras[indice] == 0) System.out.println("El trabajador no presenta registro de horas extra");
+        else {
+            int horas = horasExtras[indice] / 60;
+            int minutos = horasExtras[indice] % 60;
+
+            if (minutos < 10 && horas < 10) horaExtraTotal = "0" + horas + ":0" + minutos;
+            else if (minutos < 10 && horas >= 10) horaExtraTotal = horas + ":0" + minutos;
+            else if (minutos >= 10 && horas < 10) horaExtraTotal = "0" + horas + ":" + minutos;
+            else if (minutos >= 10 && horas >= 10) horaExtraTotal = horas + ":" + minutos;
+        }
+        return horaExtraTotal;
+    }
+
+    private static String obtenerTiempoTrabajado(int indice) {
+        String tiempoTrabajado = "00:00";
+        if (minutosTotales[indice] == 0) System.out.println("El trabajador no presenta registro de tiempo trabajado");
+        else {
+            int horas = minutosTotales[indice] / 60;
+            int minutos = minutosTotales[indice] % 60;
+
+            if (minutos < 10 && horas < 10) tiempoTrabajado = "0" + horas + ":0" + minutos;
+            else if (minutos < 10 && horas >= 10) tiempoTrabajado = horas + ":0" + minutos;
+            else if (minutos >= 10 && horas < 10) tiempoTrabajado = "0" + horas + ":" + minutos;
+            else if (minutos >= 10 && horas >= 10) tiempoTrabajado = horas + ":" + minutos;
+        }
+        return tiempoTrabajado;
     }
 
     private static void registrarSalida() {
@@ -97,14 +135,60 @@ public class TrabajoFinal_G3 {
 
             horaSalida[indice] = capturarHora();    //Registra la hora de salida
 
-            minutosTotales[indice] += ChronoUnit.MINUTES.between(horaEntrada[indice], horaSalida[indice]); //Contabiliza los minutos totales trabajados
+            if (horaEntrada[indice] == null) System.out.println("El trabajador aún no registra un ingreso.");
+            else {
+                String horasTrabajadas = obtenerHorasTrabajadasDia(indice);
+                minutosTotales[indice] += ChronoUnit.MINUTES.between(horaEntrada[indice], horaSalida[indice]); //Contabiliza los minutos totales trabajados
 
-            System.out.println(minutosTotales[indice]);
+                String horasExtraDia = obtenerHorasExtraDia(indice);
+
+                System.out.println("Hoy trabajó: " + horasTrabajadas + " horas.");
+                System.out.println("Lleva acumuladas: " + obtenerTiempoTrabajado(indice) + " horas hasta la fecha.");
+                System.out.println("Horas extra del día: " + horasExtraDia);
+            }
 
             System.out.println("");
             System.out.print("¿Desea registrar la salida de otro trabajador? (S/N): ");
             respuesta = lector.nextLine().toUpperCase();
         }while (respuesta.equals("S"));
+    }
+
+    private static String obtenerHorasTrabajadasDia(int indice) {
+        String horasTrabajadasDia = "00:00";
+        int minutosTrabajados = 0;
+        minutosTrabajados += ChronoUnit.MINUTES.between(horaEntrada[indice], horaSalida[indice]);
+        if (minutosTrabajados == 0) System.out.println("El trabajador no presenta registro de tiempo trabajado");
+        else {
+            int horas = minutosTrabajados / 60;
+            int minutos = minutosTrabajados % 60;
+
+            if (minutos < 10 && horas < 10) horasTrabajadasDia = "0" + horas + ":0" + minutos;
+            else if (minutos < 10 && horas >= 10) horasTrabajadasDia = horas + ":0" + minutos;
+            else if (minutos >= 10 && horas < 10) horasTrabajadasDia = "0" + horas + ":" + minutos;
+            else if (minutos >= 10 && horas >= 10) horasTrabajadasDia = horas + ":" + minutos;
+        }
+        return horasTrabajadasDia;
+    }
+
+    private static String obtenerHorasExtraDia(int indice) {
+        String horasExtraDia = "00:00";
+        System.out.println("Hora: " + horaSalida[indice]);
+        int minutosTrabajados = 0;
+        minutosTrabajados += ChronoUnit.MINUTES.between(horaEntrada[indice],horaSalida[indice]);
+        if (minutosTrabajados > (TIEMPOTRABAJO)) {
+            horasExtras[indice] += ChronoUnit.MINUTES.between(HORASALIDA,horaSalida[indice]);
+            if (horasExtras[indice] == 0) System.out.println("El trabajador no presenta registro de horas extra");
+            else {
+                int horas = horasExtras[indice] / 60;
+                int minutos = horasExtras[indice] % 60;
+
+                if (minutos < 10 && horas < 10) horasExtraDia = "0" + horas + ":0" + minutos;
+                else if (minutos < 10 && horas >= 10) horasExtraDia = horas + ":0" + minutos;
+                else if (minutos >= 10 && horas < 10) horasExtraDia = "0" + horas + ":" + minutos;
+                else if (minutos >= 10 && horas >= 10) horasExtraDia = horas + ":" + minutos;
+            }
+        }
+        return horasExtraDia;
     }
 
     private static void registrarEntrada() {
