@@ -25,9 +25,9 @@ public class TrabajoFinal_G3 {
         Scanner lector = new Scanner(System.in);
         String seleccion;
 
-        construirInterface();   //Construyendo interfase de usuario
-
         while (true){   //Ciclo infinito para que no se pierdan los datos registrados
+            construirInterface();   //Construyendo interfase de usuario
+            System.out.println("");
             System.out.print("Ingrese el número de la opción a realizar: ");
             seleccion = lector.next();
 
@@ -44,16 +44,21 @@ public class TrabajoFinal_G3 {
 
     private static void resumenGeneral() {
         System.out.println("Resumen General");
-        for (int i = 0; i < N; i++) {
-            String tiempoTrabajado = obtenerTiempoTrabajado(i);
-            String horasExtraTotal = obtenerHorasExtraTotal(i);
+        Scanner lector = new Scanner(System.in);
+        String tiempoTrabajado, horasExtraTotal;
 
+        for (int i = 0; i < N; i++) {
             System.out.println("El trabajador " + trabajadores[i] + ":");
+            tiempoTrabajado = obtenerTiempoTrabajado(i);
+            horasExtraTotal = obtenerHorasExtraTotal(i);
+
             System.out.println("- Tiene " + tiempoTrabajado + " horas de trabajo realizadas hasta la fecha.");
             System.out.println("- Ha asistido " + asistencia[i] + " días hasta ahora.");
             System.out.println("- Presenta " + tardanzas[i] + " tardanzas.");
             System.out.println("- Tiene acumuladas " + horasExtraTotal + " horas extra.");
             System.out.println("");
+            System.out.println("Presione ENTER para continuar.");
+            lector.nextLine();
         }
     }
 
@@ -90,7 +95,7 @@ public class TrabajoFinal_G3 {
 
     private static String obtenerHorasExtraTotal(int indice) {
         String horaExtraTotal = "00:00";
-        if (horasExtras[indice] == 0) System.out.println("El trabajador no presenta registro de horas extra");
+        if (horasExtras[indice] == 0) System.out.println("No presenta registro de horas extra");
         else {
             int horas = horasExtras[indice] / 60;
             int minutos = horasExtras[indice] % 60;
@@ -105,7 +110,7 @@ public class TrabajoFinal_G3 {
 
     private static String obtenerTiempoTrabajado(int indice) {
         String tiempoTrabajado = "00:00";
-        if (minutosTotales[indice] == 0) System.out.println("El trabajador no presenta registro de tiempo trabajado");
+        if (minutosTotales[indice] == 0) System.out.println("No presenta registro de tiempo trabajado");
         else {
             int horas = minutosTotales[indice] / 60;
             int minutos = minutosTotales[indice] % 60;
@@ -227,12 +232,16 @@ public class TrabajoFinal_G3 {
 
     private static LocalTime capturarHora() {
         int hora, minuto;
+        String horaIngreso = "00:00";
         Calendar calendario = new GregorianCalendar();
 
         hora = calendario.get(Calendar.HOUR_OF_DAY);
         minuto = calendario.get(Calendar.MINUTE);
 
-        String horaIngreso = hora + ":" + minuto;
+        if (hora < 10 && minuto < 10) horaIngreso = "0" + hora + ":0" + minuto;
+        else if (hora >= 10 && minuto <10)horaIngreso = hora + ":0" + minuto;
+        else if (hora < 10 && minuto >= 10) horaIngreso = "0" + hora + ":" + minuto;
+        else if (hora >= 10 && minuto >= 10) horaIngreso = hora + ":" + minuto;
         return LocalTime.parse(horaIngreso);
     }
 
